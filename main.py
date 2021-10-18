@@ -21,8 +21,16 @@ class App():
     def new(self):
         self.all_sprites = pg.sprite.Group()
         if self.state == 'menu-main':
-            self.quit = Image('./assets/img/menu-main/quit.png', 20, 20)
+            self.check = Image('./assets/img/menu-main/check.png', WIDTH / 2 - 93.5, 240)
+            self.all_sprites.add(self.check)
+            self.track = Image('./assets/img/menu-main/track.png', WIDTH / 2 - 98, 300)
+            self.all_sprites.add(self.track)
+            self.settings = Image('./assets/img/menu-main/settings.png', WIDTH / 2 - 133.5, 360)
+            self.all_sprites.add(self.settings)
+            self.quit = Image('./assets/img/menu-main/quit.png', WIDTH / 2 - 69, 420)
             self.all_sprites.add(self.quit)
+            self.help = Image('./assets/img/menu-main/help.png', WIDTH - 56, HEIGHT - 56)
+            self.all_sprites.add(self.help)
         self.run()
 
     def events(self):
@@ -39,6 +47,8 @@ class App():
     def draw(self):
         self.screen.fill(ASH_GRAY)
         self.all_sprites.draw(self.screen)
+        if self.state == 'menu-main':
+            self.draw_text('LOGO WILL BE ABOVE WHEN IT IS FINISHED...', 32, RED, 250, 0)
         pg.display.flip()
 
     def draw_text(self, text, size, color, x, y):

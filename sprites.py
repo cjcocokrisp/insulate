@@ -11,5 +11,5 @@ class Image(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self)
         self.image = pg.image.load(file_path)
         self.rect = self.image.get_rect()
-        self.x = x
-        self.y = y
+        self.rect.x = x
+        self.rect.y = y
