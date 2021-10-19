@@ -31,6 +31,9 @@ class App():
             self.all_sprites.add(self.quit)
             self.help = Image('./assets/img/menu-main/help.png', WIDTH - 56, HEIGHT - 56)
             self.all_sprites.add(self.help)
+        if self.state == 'menu-track':
+            self.back = Image('./assets/img/menu-track/back.png', 0, HEIGHT - 56)
+            self.all_sprites.add(self.back)
         self.run()
 
     def events(self):
@@ -41,8 +44,17 @@ class App():
     def update(self):
         self.all_sprites.update()
         mouse_pos = pg.mouse.get_pos()
-        if pg.mouse.get_pressed()[0] and self.quit.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
-            self.running = False
+        if self.state == 'menu-main':
+            if pg.mouse.get_pressed()[0] and self.quit.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                self.running = False
+            
+            if pg.mouse.get_pressed()[0] and self.track.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                self.state_change('menu-track')
+
+        if self.state == 'menu-track':
+            if pg.mouse.get_pressed()[0] and self.back.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                self.state_change('menu-main')
+            
     
     def draw(self):
         self.screen.fill(ASH_GRAY)
@@ -60,4 +72,12 @@ class App():
         text_rect = text_surface.get_rect()
         text_rect.midtop = (x, y)
         self.screen.blit(text_surface, text_rect)
+
+    def state_change(self, newState):
+
+        "Changes the state that the app is on."
+
+        self.state = newState
+        self.new()
+
 
