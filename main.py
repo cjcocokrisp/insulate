@@ -32,7 +32,13 @@ class App():
             self.help = Image('./assets/img/menu-main/help.png', WIDTH - 56, HEIGHT - 56)
             self.all_sprites.add(self.help)
         if self.state == 'menu-track':
-            self.back = Image('./assets/img/menu-track/back.png', 0, HEIGHT - 56)
+            self.header = Image('./assets/img/menu-track/header.png', 0, 0)
+            self.all_sprites.add(self.header)
+            self.manual = Image('./assets/img/menu-track/manual.png', WIDTH / 2 - 90.5 , 220)
+            self.all_sprites.add(self.manual)
+            self.dexcom = Image('assets/img/menu-track/dexcom.png', WIDTH / 2 - 160.5, 280)
+            self.all_sprites.add(self.dexcom)
+            self.back = Image('./assets/img/back.png', 0, HEIGHT - 56)
             self.all_sprites.add(self.back)
         self.run()
 
