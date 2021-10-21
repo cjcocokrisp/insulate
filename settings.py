@@ -1,7 +1,4 @@
 # Window Options
-from pygame.constants import BLEND_MULT
-
-
 WIDTH = 500
 HEIGHT = 500
 
@@ -17,3 +14,6 @@ TEAL_BLUE = (64, 121, 140)
 GREEN_SHEEN = (112, 169, 161)
 ASH_GRAY = (207, 215, 199)
 BEIGE = (246, 241, 209)
+
+# Other
+DIGITS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']

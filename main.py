@@ -12,6 +12,8 @@ class App():
         pg.display.set_caption('Insulate Development Build')
         self.clock = pg.time.Clock()
         self.state = 'menu-main'
+        self.manualBSInput = ''
+        self.manualBS = []
 
     def run(self):
         self.events()
@@ -40,12 +42,23 @@ class App():
             self.all_sprites.add(self.dexcom)
             self.back = Image('./assets/img/back.png', 0, HEIGHT - 56)
             self.all_sprites.add(self.back)
+        if self.state == 'track-manual':
+            self.header = Image('./assets/img/manual-input/header-24.png', 0, 0)
+            self.all_sprites.add(self.header)
+            self.inputBox = Surface(WIDTH / 2 - 135, HEIGHT / 2 - 50 , 270, 120, CHARLESTON_GREEN)
+            self.all_sprites.add(self.inputBox)
+            self.enter = Image('./assets/img/manual-input/enter.png', HEIGHT / 2 - 73.5, HEIGHT / 2 + 85)
+            self.all_sprites.add(self.enter)
+            self.back = Image('./assets/img/back.png', 0, HEIGHT - 56)
+            self.all_sprites.add(self.back)
         self.run()
 
     def events(self):
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.running = False
+            if self.state == 'track-manual' and event.type == pg.KEYDOWN and event.unicode in DIGITS and len(self.manualBSInput) <= 2:
+                self.manualBSInput += event.unicode
 
     def update(self):
         self.all_sprites.update()
@@ -61,12 +74,26 @@ class App():
             if pg.mouse.get_pressed()[0] and self.back.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
                 self.state_change('menu-main')
             
+            if pg.mouse.get_pressed()[0] and self.manual.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                self.state_change('track-manual')
+        
+        if self.state == 'track-manual':
+                if pg.mouse.get_pressed()[0] and self.back.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                    self.state_change('menu-main')
+
+                if pg.mouse.get_pressed()[0] and self.enter.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                    self.manualBS.append(self.manualBSInput)
+                    self.manualBSInput = ''
+                    while '' in self.manualBS:
+                        self.manualBS.remove('')
     
     def draw(self):
         self.screen.fill(ASH_GRAY)
         self.all_sprites.draw(self.screen)
         if self.state == 'menu-main':
             self.draw_text('LOGO WILL BE ABOVE WHEN IT IS FINISHED...', 32, RED, 250, 0)
+        if self.state == 'track-manual':
+            self.draw_text(self.manualBSInput, 110, BEIGE, WIDTH / 2, HEIGHT / 2 - 45)
         pg.display.flip()
 
     def draw_text(self, text, size, color, x, y):
@@ -85,5 +112,4 @@ class App():
 
         self.state = newState
         self.new()
-
 
