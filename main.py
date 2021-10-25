@@ -1,7 +1,10 @@
+from types import DynamicClassAttribute
 import pygame as pg
 import pygame as pg
+from pygame.constants import K_BACKSPACE
 from settings import *
 from sprites import *
+import json
 
 class App():
 
@@ -13,7 +16,7 @@ class App():
         self.clock = pg.time.Clock()
         self.state = 'menu-main'
         self.manualBSInput = ''
-        self.manualBS = []
+        self.manualBSData = []
 
     def run(self):
         self.events()
@@ -40,8 +43,6 @@ class App():
             self.all_sprites.add(self.manual)
             self.dexcom = Image('assets/img/menu-track/dexcom.png', WIDTH / 2 - 160.5, 280)
             self.all_sprites.add(self.dexcom)
-            self.back = Image('./assets/img/back.png', 0, HEIGHT - 56)
-            self.all_sprites.add(self.back)
         if self.state == 'track-manual':
             self.header = Image('./assets/img/manual-input/header-24.png', 0, 0)
             self.all_sprites.add(self.header)
@@ -49,6 +50,7 @@ class App():
             self.all_sprites.add(self.inputBox)
             self.enter = Image('./assets/img/manual-input/enter.png', HEIGHT / 2 - 73.5, HEIGHT / 2 + 85)
             self.all_sprites.add(self.enter)
+        if self.state != 'menu-main':
             self.back = Image('./assets/img/back.png', 0, HEIGHT - 56)
             self.all_sprites.add(self.back)
         self.run()
@@ -59,6 +61,8 @@ class App():
                 self.running = False
             if self.state == 'track-manual' and event.type == pg.KEYDOWN and event.unicode in DIGITS and len(self.manualBSInput) <= 2:
                 self.manualBSInput += event.unicode
+            if self.state == 'track-manual' and event.type == pg.KEYDOWN and event.key == K_BACKSPACE:
+                self.manualBSInput = ''
 
     def update(self):
         self.all_sprites.update()
@@ -70,6 +74,9 @@ class App():
             if pg.mouse.get_pressed()[0] and self.track.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
                 self.state_change('menu-track')
 
+            if pg.mouse.get_pressed()[0] and self.settings.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                self.state_change('settings')
+
         if self.state == 'menu-track':
             if pg.mouse.get_pressed()[0] and self.back.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
                 self.state_change('menu-main')
@@ -78,14 +85,26 @@ class App():
                 self.state_change('track-manual')
         
         if self.state == 'track-manual':
-                if pg.mouse.get_pressed()[0] and self.back.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
-                    self.state_change('menu-main')
+            if pg.mouse.get_pressed()[0] and self.back.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                self.state_change('menu-main')
+                if self.manualBSData:
+                    i = 0
+                    while i < len(self.manualBSData):
+                        self.manualBSData[i] = int(self.manualBSData[i])
+                        i += 1
+                with open('data/manual_data.json', 'w') as f:
+                    json.dump(self.manualBSData, f)
+                    f.close()
 
-                if pg.mouse.get_pressed()[0] and self.enter.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
-                    self.manualBS.append(self.manualBSInput)
-                    self.manualBSInput = ''
-                    while '' in self.manualBS:
-                        self.manualBS.remove('')
+            if pg.mouse.get_pressed()[0] and self.enter.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                self.manualBSData.append(self.manualBSInput)
+                self.manualBSInput = ''
+                while '' in self.manualBSData:
+                    self.manualBSData.remove('')
+        
+        if self.state == 'settings':
+            if pg.mouse.get_pressed()[0] and self.back.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                self.state_change('menu-main')
     
     def draw(self):
         self.screen.fill(ASH_GRAY)
@@ -112,4 +131,10 @@ class App():
 
         self.state = newState
         self.new()
+
+    def average_data(data: list):
+
+        "Calculates the average of a list of integers or floats."
+
+        return sum(data) / len(data)
 
