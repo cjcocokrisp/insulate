@@ -1,6 +1,7 @@
 from types import DynamicClassAttribute
 import pygame as pg
 import pygame as pg
+from pygame import mouse
 from pygame.constants import K_BACKSPACE
 from settings import *
 from sprites import *
@@ -45,7 +46,7 @@ class App():
             self.dexcom = Image('assets/img/menu-track/dexcom.png', WIDTH / 2 - 160.5, 280)
             self.all_sprites.add(self.dexcom)
         if self.state == 'track-manual':
-            self.header = Image('./assets/img/manual-input/header-24.png', 0, 0)
+            self.header = Image('./assets/img/manual-input/header-' + str(self.appSettings['collection_range']) + '.png', 0, 0)
             self.all_sprites.add(self.header)
             self.inputBox = Surface(WIDTH / 2 - 135, HEIGHT / 2 - 50 , 270, 120, CHARLESTON_GREEN)
             self.all_sprites.add(self.inputBox)
@@ -66,18 +67,20 @@ class App():
             self.all_sprites.add(self.optionBoxH)
             self.rightArrowH = Image('./assets/img/settings/right-arrow.png', 430, 150)
             self.all_sprites.add(self.rightArrowH)
-            self.leftArrowR = Image('./assets/img/settings/left-arrow.png', 325, 200)
-            self.all_sprites.add(self.leftArrowR)
-            self.optionBoxR = Surface(355, 200, 65, 40, CHARLESTON_GREEN)
-            self.all_sprites.add(self.optionBoxR)
-            self.rightArrowR = Image('./assets/img/settings/right-arrow.png', 430, 200)
-            self.all_sprites.add(self.rightArrowR)
+            self.leftArrowL = Image('./assets/img/settings/left-arrow.png', 325, 200)
+            self.all_sprites.add(self.leftArrowL)
+            self.optionBoxL = Surface(355, 200, 65, 40, CHARLESTON_GREEN)
+            self.all_sprites.add(self.optionBoxL)
+            self.rightArrowL = Image('./assets/img/settings/right-arrow.png', 430, 200)
+            self.all_sprites.add(self.rightArrowL)
             self.leftArrowC = Image('./assets/img/settings/left-arrow.png', 325, 250)
             self.all_sprites.add(self.leftArrowC)
             self.optionBoxC = Surface(355, 250, 65, 40, CHARLESTON_GREEN)
             self.all_sprites.add(self.optionBoxC)
             self.rightArrowC = Image('./assets/img/settings/right-arrow.png', 430, 250)
             self.all_sprites.add(self.rightArrowC)
+            self.save = Image('./assets/img/settings/save.png', WIDTH / 2 - 93.5, 350)
+            self.all_sprites.add(self.save)
         if self.state != 'menu-main':
             self.back = Image('./assets/img/back.png', 0, HEIGHT - 56)
             self.all_sprites.add(self.back)
@@ -91,6 +94,24 @@ class App():
                 self.manualBSInput += event.unicode
             if self.state == 'track-manual' and event.type == pg.KEYDOWN and event.key == K_BACKSPACE:
                 self.manualBSInput = ''
+            if event.type == pg.MOUSEBUTTONUP and self.state == 'settings': 
+                mouse_pos = pg.mouse.get_pos()
+                if self.leftArrowH.rect.collidepoint(mouse_pos[0], mouse_pos[1]) and self.appSettings['high_setting'] > 120:
+                    self.appSettings['high_setting'] -= 5
+                elif self.rightArrowH.rect.collidepoint(mouse_pos[0], mouse_pos[1]) and self.appSettings['high_setting'] < 400:
+                    self.appSettings['high_setting'] += 5
+                
+                if self.leftArrowL.rect.collidepoint(mouse_pos[0], mouse_pos[1]) and self.appSettings['low_setting'] > 60:
+                    self.appSettings['low_setting'] -= 5
+                elif self.rightArrowL.rect.collidepoint(mouse_pos[0], mouse_pos[1]) and self.appSettings['low_setting'] < 100:
+                    self.appSettings['low_setting'] += 5
+
+                if self.leftArrowC.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                    if self.appSettings['collection_range'] == 24: self.appSettings['collection_range'] = 12
+                    elif self.appSettings['collection_range'] == 48: self.appSettings['collection_range'] = 24
+                elif self.rightArrowC.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                    if self.appSettings['collection_range'] == 12: self.appSettings['collection_range'] = 24
+                    elif self.appSettings['collection_range'] == 24: self.appSettings['collection_range'] = 48
 
     def update(self):
         self.all_sprites.update()
@@ -131,8 +152,12 @@ class App():
                     self.manualBSData.remove('')
         
         if self.state == 'settings':
+
             if pg.mouse.get_pressed()[0] and self.back.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
                 self.state_change('menu-main')
+                
+            if pg.mouse.get_pressed()[0] and self.save.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                self.save_settings()
 
             
     
@@ -179,6 +204,16 @@ class App():
         with open('./data/settings.json', 'r') as f:
             settings = json.load(f)
 
+        f.close()
         return settings
+
+    def save_settings(self):
+
+        "Save settings when altered."
+
+        with open('./data/settings.json', 'w') as f:
+            json.dump(self.appSettings, f)
+
+        f.close()
 
 
