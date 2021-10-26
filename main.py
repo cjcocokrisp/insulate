@@ -17,6 +17,7 @@ class App():
         self.state = 'menu-main'
         self.manualBSInput = ''
         self.manualBSData = []
+        #self.settings = load_settings()
 
     def run(self):
         self.events()
@@ -50,6 +51,33 @@ class App():
             self.all_sprites.add(self.inputBox)
             self.enter = Image('./assets/img/manual-input/enter.png', HEIGHT / 2 - 73.5, HEIGHT / 2 + 85)
             self.all_sprites.add(self.enter)
+        if self.state == 'settings':
+            self.header = Image('./assets/img/settings/header.png', 0, 50)
+            self.all_sprites.add(self.header)
+            self.high = Image('./assets/img/settings/high.png', 45, 150)
+            self.all_sprites.add(self.high)
+            self.low = Image('./assets/img/settings/low.png', 45, 200)
+            self.all_sprites.add(self.low)
+            self.collect = Image('./assets/img/settings/collection.png', 45, 250)
+            self.all_sprites.add(self.collect)
+            self.leftArrowH = Image('./assets/img/settings/left-arrow.png', 325, 150)
+            self.all_sprites.add(self.leftArrowH)
+            self.optionBoxH = Surface(355, 150, 65, 40, CHARLESTON_GREEN)
+            self.all_sprites.add(self.optionBoxH)
+            self.rightArrowH = Image('./assets/img/settings/right-arrow.png', 430, 150)
+            self.all_sprites.add(self.rightArrowH)
+            self.leftArrowR = Image('./assets/img/settings/left-arrow.png', 325, 200)
+            self.all_sprites.add(self.leftArrowR)
+            self.optionBoxR = Surface(355, 200, 65, 40, CHARLESTON_GREEN)
+            self.all_sprites.add(self.optionBoxR)
+            self.rightArrowR = Image('./assets/img/settings/right-arrow.png', 430, 200)
+            self.all_sprites.add(self.rightArrowR)
+            self.leftArrowC = Image('./assets/img/settings/left-arrow.png', 325, 250)
+            self.all_sprites.add(self.leftArrowC)
+            self.optionBoxC = Surface(355, 250, 65, 40, CHARLESTON_GREEN)
+            self.all_sprites.add(self.optionBoxC)
+            self.rightArrowC = Image('./assets/img/settings/right-arrow.png', 430, 250)
+            self.all_sprites.add(self.rightArrowC)
         if self.state != 'menu-main':
             self.back = Image('./assets/img/back.png', 0, HEIGHT - 56)
             self.all_sprites.add(self.back)
@@ -105,6 +133,8 @@ class App():
         if self.state == 'settings':
             if pg.mouse.get_pressed()[0] and self.back.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
                 self.state_change('menu-main')
+
+            
     
     def draw(self):
         self.screen.fill(ASH_GRAY)
@@ -113,6 +143,8 @@ class App():
             self.draw_text('LOGO WILL BE ABOVE WHEN IT IS FINISHED...', 32, RED, 250, 0)
         if self.state == 'track-manual':
             self.draw_text(self.manualBSInput, 110, BEIGE, WIDTH / 2, HEIGHT / 2 - 45)
+        if self.state == 'settings':
+            pass
         pg.display.flip()
 
     def draw_text(self, text, size, color, x, y):
@@ -137,4 +169,8 @@ class App():
         "Calculates the average of a list of integers or floats."
 
         return sum(data) / len(data)
+
+    def load_settings(self):
+        pass
+
 
