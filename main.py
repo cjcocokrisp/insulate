@@ -17,7 +17,7 @@ class App():
         self.state = 'menu-main'
         self.manualBSInput = ''
         self.manualBSData = []
-        #self.settings = load_settings()
+        self.appSettings = self.load_settings()
 
     def run(self):
         self.events()
@@ -144,7 +144,9 @@ class App():
         if self.state == 'track-manual':
             self.draw_text(self.manualBSInput, 110, BEIGE, WIDTH / 2, HEIGHT / 2 - 45)
         if self.state == 'settings':
-            pass
+            self.draw_text(str(self.appSettings['high_setting']), 32, ASH_GRAY, 387, 152)
+            self.draw_text(str(self.appSettings['low_setting']), 32, ASH_GRAY, 387, 202)
+            self.draw_text(str(self.appSettings['collection_range']), 32, ASH_GRAY, 387, 252)
         pg.display.flip()
 
     def draw_text(self, text, size, color, x, y):
@@ -171,6 +173,12 @@ class App():
         return sum(data) / len(data)
 
     def load_settings(self):
-        pass
+
+        "Loads settings from './data/settings.json'"
+
+        with open('./data/settings.json', 'r') as f:
+            settings = json.load(f)
+
+        return settings
 
 
