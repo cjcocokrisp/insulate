@@ -1,6 +1,5 @@
 import http.client
 import webbrowser
-import json
 from api_credentials import *
 from requests.api import request
 
@@ -23,7 +22,7 @@ def get_data(auth_code: str):
     res = conn.getresponse()
     data = res.read()
 
-    print(data.decode('utf-8'))
+    return data
 
 def get_egvs(token:str):
 
@@ -39,14 +38,5 @@ def get_egvs(token:str):
     data = res.read()
 
     return data
-
-
-prompt_login()
-get_data(input("INPUT AUTH CODE: "))
-numbers = get_egvs(input("INPUT BEARER TOKEN: "))
-res = json.loads(numbers)
-with open('./data/test.json', 'w') as f:
-    json.dump(res, f, indent=4)
-    f.close()
 
 
