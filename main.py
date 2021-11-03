@@ -16,9 +16,9 @@ class App():
         pg.display.set_caption('Insulate Development Build')
         self.clock = pg.time.Clock()
         self.state = 'menu-main'
-        self.manualBSInput = ''
-        self.manualBSData = []
-        self.appSettings = self.load_settings()
+        self.manual_bs_input = ''
+        self.manual_bs_data = []
+        self.app_settings = self.load_settings()
 
     def run(self):
         self.events()
@@ -46,7 +46,7 @@ class App():
             self.dexcom = Image('assets/img/menu-track/dexcom.png', WIDTH / 2 - 160.5, 280)
             self.all_sprites.add(self.dexcom)
         if self.state == 'track-manual':
-            self.header = Image('./assets/img/manual-input/header-' + str(self.appSettings['collection_range']) + '.png', 0, 0)
+            self.header = Image('./assets/img/manual-input/header-' + str(self.app_settings['collection_range']) + '.png', 0, 0)
             self.all_sprites.add(self.header)
             self.inputBox = Surface(WIDTH / 2 - 135, HEIGHT / 2 - 50 , 270, 120, CHARLESTON_GREEN)
             self.all_sprites.add(self.inputBox)
@@ -61,24 +61,24 @@ class App():
             self.all_sprites.add(self.low)
             self.collect = Image('./assets/img/settings/collection.png', 45, 250)
             self.all_sprites.add(self.collect)
-            self.leftArrowH = Image('./assets/img/settings/left-arrow.png', 325, 150)
-            self.all_sprites.add(self.leftArrowH)
-            self.optionBoxH = Surface(355, 150, 65, 40, CHARLESTON_GREEN)
-            self.all_sprites.add(self.optionBoxH)
-            self.rightArrowH = Image('./assets/img/settings/right-arrow.png', 430, 150)
-            self.all_sprites.add(self.rightArrowH)
-            self.leftArrowL = Image('./assets/img/settings/left-arrow.png', 325, 200)
-            self.all_sprites.add(self.leftArrowL)
-            self.optionBoxL = Surface(355, 200, 65, 40, CHARLESTON_GREEN)
-            self.all_sprites.add(self.optionBoxL)
-            self.rightArrowL = Image('./assets/img/settings/right-arrow.png', 430, 200)
-            self.all_sprites.add(self.rightArrowL)
-            self.leftArrowC = Image('./assets/img/settings/left-arrow.png', 325, 250)
-            self.all_sprites.add(self.leftArrowC)
-            self.optionBoxC = Surface(355, 250, 65, 40, CHARLESTON_GREEN)
-            self.all_sprites.add(self.optionBoxC)
-            self.rightArrowC = Image('./assets/img/settings/right-arrow.png', 430, 250)
-            self.all_sprites.add(self.rightArrowC)
+            self.left_arrow_h = Image('./assets/img/settings/left-arrow.png', 325, 150)
+            self.all_sprites.add(self.left_arrow_h)
+            self.option_box_l = Surface(355, 150, 65, 40, CHARLESTON_GREEN)
+            self.all_sprites.add(self.option_box_l)
+            self.right_arrow_h = Image('./assets/img/settings/right-arrow.png', 430, 150)
+            self.all_sprites.add(self.right_arrow_h)
+            self.left_arrow_l = Image('./assets/img/settings/left-arrow.png', 325, 200)
+            self.all_sprites.add(self.left_arrow_l)
+            self.option_box_l = Surface(355, 200, 65, 40, CHARLESTON_GREEN)
+            self.all_sprites.add(self.option_box_l)
+            self.right_arrow_l = Image('./assets/img/settings/right-arrow.png', 430, 200)
+            self.all_sprites.add(self.right_arrow_l)
+            self.left_arrow_c = Image('./assets/img/settings/left-arrow.png', 325, 250)
+            self.all_sprites.add(self.left_arrow_c)
+            self.option_box_c = Surface(355, 250, 65, 40, CHARLESTON_GREEN)
+            self.all_sprites.add(self.option_box_c)
+            self.right_arrow_c = Image('./assets/img/settings/right-arrow.png', 430, 250)
+            self.all_sprites.add(self.right_arrow_c)
             self.save = Image('./assets/img/settings/save.png', WIDTH / 2 - 93.5, 350)
             self.all_sprites.add(self.save)
         if self.state != 'menu-main':
@@ -90,28 +90,28 @@ class App():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.running = False
-            if self.state == 'track-manual' and event.type == pg.KEYDOWN and event.unicode in DIGITS and len(self.manualBSInput) <= 2:
-                self.manualBSInput += event.unicode
+            if self.state == 'track-manual' and event.type == pg.KEYDOWN and event.unicode in DIGITS and len(self.manual_bs_input) <= 2:
+                self.manual_bs_input += event.unicode
             if self.state == 'track-manual' and event.type == pg.KEYDOWN and event.key == K_BACKSPACE:
-                self.manualBSInput = ''
+                self.manual_bs_input = ''
             if event.type == pg.MOUSEBUTTONUP and self.state == 'settings': 
                 mouse_pos = pg.mouse.get_pos()
-                if self.leftArrowH.rect.collidepoint(mouse_pos[0], mouse_pos[1]) and self.appSettings['high_setting'] > 120:
-                    self.appSettings['high_setting'] -= 5
-                elif self.rightArrowH.rect.collidepoint(mouse_pos[0], mouse_pos[1]) and self.appSettings['high_setting'] < 400:
-                    self.appSettings['high_setting'] += 5
+                if self.left_arrow_h.rect.collidepoint(mouse_pos[0], mouse_pos[1]) and self.app_settings['high_setting'] > 120:
+                    self.app_settings['high_setting'] -= 5
+                elif self.right_arrow_h.rect.collidepoint(mouse_pos[0], mouse_pos[1]) and self.app_settings['high_setting'] < 400:
+                    self.app_settings['high_setting'] += 5
                 
-                if self.leftArrowL.rect.collidepoint(mouse_pos[0], mouse_pos[1]) and self.appSettings['low_setting'] > 60:
-                    self.appSettings['low_setting'] -= 5
-                elif self.rightArrowL.rect.collidepoint(mouse_pos[0], mouse_pos[1]) and self.appSettings['low_setting'] < 100:
-                    self.appSettings['low_setting'] += 5
+                if self.left_arrow_l.rect.collidepoint(mouse_pos[0], mouse_pos[1]) and self.app_settings['low_setting'] > 60:
+                    self.app_settings['low_setting'] -= 5
+                elif self.right_arrow_l.rect.collidepoint(mouse_pos[0], mouse_pos[1]) and self.app_settings['low_setting'] < 100:
+                    self.app_settings['low_setting'] += 5
 
-                if self.leftArrowC.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
-                    if self.appSettings['collection_range'] == 24: self.appSettings['collection_range'] = 12
-                    elif self.appSettings['collection_range'] == 48: self.appSettings['collection_range'] = 24
-                elif self.rightArrowC.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
-                    if self.appSettings['collection_range'] == 12: self.appSettings['collection_range'] = 24
-                    elif self.appSettings['collection_range'] == 24: self.appSettings['collection_range'] = 48
+                if self.left_arrow_c.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                    if self.app_settings['collection_range'] == 24: self.app_settings['collection_range'] = 12
+                    elif self.app_settings['collection_range'] == 48: self.app_settings['collection_range'] = 24
+                elif self.right_arrow_c.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                    if self.app_settings['collection_range'] == 12: self.app_settings['collection_range'] = 24
+                    elif self.app_settings['collection_range'] == 24: self.app_settings['collection_range'] = 48
 
     def update(self):
         self.all_sprites.update()
@@ -132,24 +132,27 @@ class App():
             
             if pg.mouse.get_pressed()[0] and self.manual.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
                 self.state_change('track-manual')
+
+            if pg.mouse.get_pressed()[0] and self.dexcom.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                self.state_change('track-dexcom')
         
         if self.state == 'track-manual':
             if pg.mouse.get_pressed()[0] and self.back.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
                 self.state_change('menu-main')
-                if self.manualBSData:
+                if self.manual_bs_data:
                     i = 0
-                    while i < len(self.manualBSData):
-                        self.manualBSData[i] = int(self.manualBSData[i])
+                    while i < len(self.manual_bs_data):
+                        self.manual_bs_data[i] = int(self.manual_bs_data[i])
                         i += 1
-                with open('data/manual_data.json', 'w') as f:
-                    json.dump(self.manualBSData, f)
+                with open('data/gv_data.json', 'w') as f:
+                    json.dump(self.manual_bs_data, f)
                     f.close()
 
             if pg.mouse.get_pressed()[0] and self.enter.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
-                self.manualBSData.append(self.manualBSInput)
-                self.manualBSInput = ''
-                while '' in self.manualBSData:
-                    self.manualBSData.remove('')
+                self.manual_bs_data.append(self.manual_bs_input)
+                self.manual_bs_input = ''
+                while '' in self.manual_bs_data:
+                    self.manual_bs_data.remove('')
         
         if self.state == 'settings':
 
@@ -167,11 +170,11 @@ class App():
         if self.state == 'menu-main':
             self.draw_text('LOGO WILL BE ABOVE WHEN IT IS FINISHED...', 32, RED, 250, 0)
         if self.state == 'track-manual':
-            self.draw_text(self.manualBSInput, 110, BEIGE, WIDTH / 2, HEIGHT / 2 - 45)
+            self.draw_text(self.manual_bs_input, 110, BEIGE, WIDTH / 2, HEIGHT / 2 - 45)
         if self.state == 'settings':
-            self.draw_text(str(self.appSettings['high_setting']), 32, ASH_GRAY, 387, 152)
-            self.draw_text(str(self.appSettings['low_setting']), 32, ASH_GRAY, 387, 202)
-            self.draw_text(str(self.appSettings['collection_range']), 32, ASH_GRAY, 387, 252)
+            self.draw_text(str(self.app_settings['high_setting']), 32, ASH_GRAY, 387, 152)
+            self.draw_text(str(self.app_settings['low_setting']), 32, ASH_GRAY, 387, 202)
+            self.draw_text(str(self.app_settings['collection_range']), 32, ASH_GRAY, 387, 252)
         pg.display.flip()
 
     def draw_text(self, text, size, color, x, y):
@@ -212,8 +215,7 @@ class App():
         "Save settings when altered."
 
         with open('./data/settings.json', 'w') as f:
-            json.dump(self.appSettings, f)
-
-        f.close()
+            json.dump(self.app_settings, f)
+            f.close()
 
 
