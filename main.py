@@ -69,6 +69,13 @@ class App():
             self.all_sprites.add(self.input_box)
             self.paste = Image('./assets/img/dexcom-integration/paste.png', WIDTH - 120, HEIGHT - 37)
             self.all_sprites.add(self.paste)
+        if self.state == 'menu-check':
+            self.header = Image('./assets/img/menu-check/header.png', 0, 20)
+            self.all_sprites.add(self.header)
+            self.start_check = Image('./assets/img/menu-check/check_and_reward.png', WIDTH / 2 - 202, 225)
+            self.all_sprites.add(self.start_check)
+            self.collection = Image('./assets/img/menu-check/collection.png', WIDTH / 2 - 184.5, 280)
+            self.all_sprites.add(self.collection)
         if self.state == 'settings':
             self.header = Image('./assets/img/settings/header.png', 0, 50)
             self.all_sprites.add(self.header)
@@ -141,6 +148,9 @@ class App():
             if pg.mouse.get_pressed()[0] and self.quit.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
                 self.running = False
             
+            if pg.mouse.get_pressed()[0] and self.check.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                self.state_change('menu-check')
+
             if pg.mouse.get_pressed()[0] and self.track.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
                 self.state_change('menu-track')
 
@@ -199,6 +209,10 @@ class App():
                 while '' in self.manual_bs_data:
                     self.manual_bs_data.remove('')
         
+        if self.state == 'menu-check':
+            if pg.mouse.get_pressed()[0] and self.back.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                self.state_change('menu-main')
+
         if self.state == 'settings':
 
             if pg.mouse.get_pressed()[0] and self.back.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
