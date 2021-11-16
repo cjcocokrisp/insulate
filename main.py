@@ -9,7 +9,7 @@ import json
 import dexcom_integration as dex_int
 import clipboard
 from datetime import datetime
-
+from time import sleep
 
 class App():
 
@@ -25,7 +25,9 @@ class App():
         self.auth_code = ''
         self.bearer_token = ''
         self.app_settings = self.load_settings()
-
+        self.current_date = self.get_date_time()
+        self.average = 0
+        
     def run(self):
         self.events()
         self.update()
@@ -34,6 +36,8 @@ class App():
     def new(self):
         self.all_sprites = pg.sprite.Group()
         if self.state == 'menu-main':
+            self.logo = Image('./assets/img/logo.png', 0, 35)
+            self.all_sprites.add(self.logo)
             self.check = Image('./assets/img/menu-main/check.png', WIDTH / 2 - 93.5, 240)
             self.all_sprites.add(self.check)
             self.track = Image('./assets/img/menu-main/track.png', WIDTH / 2 - 98, 300)
@@ -72,10 +76,28 @@ class App():
         if self.state == 'menu-check':
             self.header = Image('./assets/img/menu-check/header.png', 0, 20)
             self.all_sprites.add(self.header)
-            self.start_check = Image('./assets/img/menu-check/check_and_reward.png', WIDTH / 2 - 202, 225)
+            self.start_check = Image('./assets/img/menu-check/check_and_play.png', WIDTH / 2 - 162.5, 200)
             self.all_sprites.add(self.start_check)
-            self.collection = Image('./assets/img/menu-check/collection.png', WIDTH / 2 - 184.5, 280)
-            self.all_sprites.add(self.collection)
+            self.stats = Image('./assets/img/menu-check/stats.png', WIDTH / 2 - 173, 280)
+            self.all_sprites.add(self.stats)
+            self.how_to = Image('./assets/img/menu-check/how_to_play.png', WIDTH / 2 - 135, 360)
+            self.all_sprites.add(self.how_to)
+            if self.current_date[0:10] == self.app_settings['last_check']:
+                self.check_status = Image('./assets/img/menu-check/yes.png', WIDTH - 277, HEIGHT - 40)
+            else:
+                self.check_status = Image('./assets/img/menu-check/no.png', WIDTH - 328, HEIGHT - 40)
+            self.all_sprites.add(self.check_status)
+            self.error = Image('./assets/img/menu-check/error.png', 500, 0)
+            self.all_sprites.add(self.error)
+        if self.state == 'check':
+            self.header = Image('./assets/img/check/header.png', 0, 0)
+            self.all_sprites.add(self.header)
+            self.play = Image('./assets/img/check/play.png', WIDTH / 2 - 55, 240)
+            self.all_sprites.add(self.play)
+            self.advice = Image('./assets/img/check/advice.png', WIDTH / 2 - 77.5, 290)
+            self.all_sprites.add(self.advice)
+            self.remaining = Image('./assets/img/check/remaining.png', WIDTH - 304, HEIGHT - 30)
+            self.all_sprites.add(self.remaining)
         if self.state == 'settings':
             self.header = Image('./assets/img/settings/header.png', 0, 50)
             self.all_sprites.add(self.header)
@@ -210,9 +232,28 @@ class App():
                     self.manual_bs_data.remove('')
         
         if self.state == 'menu-check':
+            
             if pg.mouse.get_pressed()[0] and self.back.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
                 self.state_change('menu-main')
 
+            if pg.mouse.get_pressed()[0] and self.start_check.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                if self.app_settings['last_check'] != self.current_date[0:10]:
+                    self.state_change('check')
+                # WHEN DONE WITH PROGRAM TRY TO GET ERROR MESSAGE WORKING
+                
+        if self.state == 'check':
+            
+            if pg.mouse.get_pressed()[0] and self.back.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                self.state_change('menu-check')
+
+            data = self.load_bs_data()
+            if not data:
+                self.average = "NONE"
+            else:
+                self.average = self.average_data(data)
+                
+            
+                                                          
         if self.state == 'settings':
 
             if pg.mouse.get_pressed()[0] and self.back.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
@@ -221,13 +262,9 @@ class App():
             if pg.mouse.get_pressed()[0] and self.save.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
                 self.save_settings()
 
-            
-    
     def draw(self):
         self.screen.fill(ASH_GRAY)
         self.all_sprites.draw(self.screen)
-        if self.state == 'menu-main':
-            self.draw_text('LOGO WILL BE ABOVE WHEN IT IS FINISHED...', 32, RED, 250, 0)
         if self.state == 'track-manual':
             self.draw_text(self.manual_bs_input, 110, BEIGE, WIDTH / 2, HEIGHT / 2 - 45)
         if self.state == 'track-dexcom':
@@ -255,7 +292,7 @@ class App():
         self.state = new_state
         self.new()
 
-    def average_data(data: list):
+    def average_data(self, data: list):
 
         "Calculates the average of a list of integers or floats."
 
@@ -356,8 +393,14 @@ class App():
 
         f.close()
 
-
+    def load_bs_data(self):
         
+        "Load blood sugars from 'gv_data.json.'"
+        
+        with open('./data/gv_data.json', 'r') as f:
+            data = json.load(f)
+            
+        return data
 
     def load_settings(self):
 
@@ -374,7 +417,6 @@ class App():
         "Save settings when altered."
 
         with open('./data/settings.json', 'w') as f:
-            json.dump(self.app_settings, f)
+            json.dump(self.app_settings, f, indent=4)
             f.close()
-
 
