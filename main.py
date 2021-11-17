@@ -27,6 +27,7 @@ class App():
         self.app_settings = self.load_settings()
         self.current_date = self.get_date_time()
         self.average = 0
+        self.plays_remaining = 0
         
     def run(self):
         self.events()
@@ -239,20 +240,21 @@ class App():
             if pg.mouse.get_pressed()[0] and self.start_check.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
                 if self.app_settings['last_check'] != self.current_date[0:10]:
                     self.state_change('check')
-                # WHEN DONE WITH PROGRAM TRY TO GET ERROR MESSAGE WORKING
+                    data = self.load_bs_data()
+                    if not data:
+                        self.average = "NONE"
+                    else:
+                        self.average = self.average_data(data)
+                        if self.average >= self.app_settings['high_setting'] or self.average <= self.app_settings['low_setting']:
+                            self.plays_remaining = 1
+                        else: 
+                            self.plays_remaining = 3
+                # WHEN DONE WITH APP TRY TO GET ERROR MESSAGE WORKING
                 
         if self.state == 'check':
             
             if pg.mouse.get_pressed()[0] and self.back.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
                 self.state_change('menu-check')
-
-            data = self.load_bs_data()
-            if not data:
-                self.average = "NONE"
-            else:
-                self.average = self.average_data(data)
-                
-            
                                                           
         if self.state == 'settings':
 
@@ -265,6 +267,12 @@ class App():
     def draw(self):
         self.screen.fill(ASH_GRAY)
         self.all_sprites.draw(self.screen)
+        if self.state == 'check' and self.average != 'NONE':
+            self.draw_text(str(round(self.average, 2)), 64, CHARLESTON_GREEN, 370, 68)
+            self.draw_text(str(self.plays_remaining), 39, CHARLESTON_GREEN, WIDTH - 28, HEIGHT - 36)
+        elif self.state == 'check':
+            self.draw_text("NONE", 64, CHARLESTON_GREEN, 370, 68)
+            self.draw_text('0', 39, CHARLESTON_GREEN, WIDTH - 28, HEIGHT - 36)
         if self.state == 'track-manual':
             self.draw_text(self.manual_bs_input, 110, BEIGE, WIDTH / 2, HEIGHT / 2 - 45)
         if self.state == 'track-dexcom':
