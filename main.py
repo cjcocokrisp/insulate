@@ -3,6 +3,7 @@ import pygame as pg
 import pygame as pg
 from pygame import mouse
 from pygame.constants import K_BACKSPACE, K_LCTRL, K_v
+from game import Game
 from settings import *
 from sprites import *
 import json
@@ -137,6 +138,9 @@ class App():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.running = False
+            elif event.type == pg.KEYDOWN:
+                if event.key == pg.K_ESCAPE:
+                    self.running = False
             if self.state == 'track-manual' and event.type == pg.KEYDOWN and event.unicode in DIGITS and len(self.manual_bs_input) <= 2:
                 self.manual_bs_input += event.unicode
             if self.state == 'track-dexcom' and event.type == pg.KEYDOWN and len(self.auth_code) < 32:
@@ -145,6 +149,12 @@ class App():
                 self.auth_code = ''
             if self.state == 'track-manual' and event.type == pg.KEYDOWN and event.key == K_BACKSPACE:
                 self.manual_bs_input = ''
+            if self.state == 'check':
+                mouse_pos = pg.mouse.get_pos()
+                if event.type == pg.MOUSEBUTTONUP and self.play.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                    game = Game()
+                    while game.running:
+                        game.new()
             if event.type == pg.MOUSEBUTTONUP and self.state == 'settings': 
                 mouse_pos = pg.mouse.get_pos()
                 if self.left_arrow_h.rect.collidepoint(mouse_pos[0], mouse_pos[1]) and self.app_settings['high_setting'] > 120:
@@ -255,6 +265,11 @@ class App():
             
             if pg.mouse.get_pressed()[0] and self.back.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
                 self.state_change('menu-check')
+                
+            #if pg.MOUSEBUTTONDOWN and self.play.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                #game = Game()
+                #while game.running:
+                    #game.new()
                                                           
         if self.state == 'settings':
 

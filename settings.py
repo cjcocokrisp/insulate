@@ -2,6 +2,11 @@
 WIDTH = 500
 HEIGHT = 500
 
+# Player Properties
+PLAYER_ACC = 1.5
+PLAYER_FRICTION = -0.08
+PLAYER_GRAVITY = 0.8
+
 # Colors
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
