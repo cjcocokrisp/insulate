@@ -13,8 +13,8 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 GREY = (99, 99, 99)
-# The five colors below were generated as part of a color scheme.
-# Generated with https://www.coolors.co.
+GOLD = (212, 175, 55)
+# The five colors below were generated as part of a color scheme and have been altered from their orginal generation. Generated with https://www.coolors.co.
 CHARLESTON_GREEN = (21, 52, 62)
 TEAL_BLUE = (111, 231, 213)
 GREEN_SHEEN = (78, 123, 116)
