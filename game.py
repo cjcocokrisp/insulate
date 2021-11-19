@@ -53,9 +53,13 @@ class Game():
                     print(self.score)
 
         if len(self.platforms) <= 5:
-            p = Surface(random.randint(0, WIDTH), random.randint(-180, 0), random.randint(100, 200), 20, CHARLESTON_GREEN)
+            p = Surface(random.randint(0, WIDTH), random.randint(-90, 0), random.randint(100, 200), 20, CHARLESTON_GREEN)
             self.platforms.add(p)
             self.all_sprites.add(p)
+            
+        if self.player.pos.y > 550:
+            self.playing = False
+            self.running = False
             
     def events(self):
         for event in pg.event.get():
