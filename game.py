@@ -2,6 +2,7 @@ import pygame as pg
 from pygame.constants import KEYDOWN
 from settings import *
 from sprites import *
+import random
 
 class Game():
     
@@ -11,15 +12,19 @@ class Game():
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         pg.display.set_caption("Insulate Development Build")
         self.clock = pg.time.Clock()
+        self.score = 0
+        self.coins = 0
     
     def new(self):
         self.all_sprites = pg.sprite.Group()
         self.player = Player(self)
         self.platforms = pg.sprite.Group()
-        p = Surface(0, HEIGHT - 60, WIDTH, 60, CHARLESTON_GREEN)
-        self.platforms.add(p)
-        self.all_sprites.add(p)
-        self.all_sprites.add(self.player)
+        ground = Surface(0, HEIGHT - 60, WIDTH, 60, CHARLESTON_GREEN)
+        start_plat1 = Surface(20, 280, 110, 20, CHARLESTON_GREEN)
+        start_plat2 = Surface(WIDTH - 130, 280, 110, 20, CHARLESTON_GREEN)
+        start_plat3 = Surface(WIDTH / 2 - 55, 100, 110, 20, CHARLESTON_GREEN)
+        self.platforms.add(ground, start_plat1, start_plat2, start_plat3)
+        self.all_sprites.add(self.player, ground, start_plat1, start_plat2, start_plat3)
         self.run()
         
     def run(self):
@@ -37,7 +42,21 @@ class Game():
         if plat_hits:
             self.player.pos.y = plat_hits[0].rect.top
             self.player.vel.y = 0
-    
+            
+        if self.player.rect.top <= 120: 
+            self.player.pos.y += max(abs(self.player.vel.y),2)
+            for plat in self.platforms:
+                plat.rect.top += max(abs(self.player.vel.y),2)
+                if plat.rect.y >= 500:
+                    plat.kill()
+                    self.score += 10
+                    print(self.score)
+
+        if len(self.platforms) <= 5:
+            p = Surface(random.randint(0, WIDTH), random.randint(-180, 0), random.randint(100, 200), 20, CHARLESTON_GREEN)
+            self.platforms.add(p)
+            self.all_sprites.add(p)
+            
     def events(self):
         for event in pg.event.get():
             if event.type == pg.QUIT:
