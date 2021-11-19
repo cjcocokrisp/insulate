@@ -4,8 +4,9 @@ HEIGHT = 500
 
 # Player Properties
 PLAYER_ACC = 1.5
-PLAYER_FRICTION = -0.08
+PLAYER_FRICTION = -0.1
 PLAYER_GRAVITY = 0.8
+PLAYER_COLOR = (116, 209, 196)
 
 # Colors
 RED = (255, 0, 0)
@@ -14,10 +15,10 @@ GREEN = (0, 255, 0)
 GREY = (99, 99, 99)
 # The five colors below were generated as part of a color scheme.
 # Generated with https://www.coolors.co.
-CHARLESTON_GREEN = (11, 32, 39)
-TEAL_BLUE = (64, 121, 140)
-GREEN_SHEEN = (112, 169, 161)
-ASH_GRAY = (207, 215, 199)
+CHARLESTON_GREEN = (21, 52, 62)
+TEAL_BLUE = (111, 231, 213)
+GREEN_SHEEN = (78, 123, 116)
+ASH_GRAY = (224, 230, 217)
 BEIGE = (246, 241, 209)
 
 # Other
