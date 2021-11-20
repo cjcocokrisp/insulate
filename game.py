@@ -1,5 +1,5 @@
 import pygame as pg
-from pygame.constants import KEYDOWN
+from pygame.constants import KEYDOWN, K_z
 from settings import *
 from sprites import *
 import random
@@ -20,6 +20,8 @@ class Game():
         self.player = Player(self)
         self.platforms = pg.sprite.Group()
         self.coins = pg.sprite.Group()
+        self.enemies = pg.sprite.Group()
+        self.bullets = pg.sprite.Group()
         ground = Surface(0, HEIGHT - 60, WIDTH, 60, GREEN_SHEEN)
         start_plat1 = Surface(20, 280, 110, 20, GREEN_SHEEN)
         start_plat2 = Surface(WIDTH - 130, 280, 110, 20, GREEN_SHEEN)
@@ -39,16 +41,28 @@ class Game():
     def update(self):
         self.all_sprites.update()
         
-        plat_hits = pg.sprite.spritecollide(self.player, self.platforms, False)
-        if plat_hits:
-            self.player.pos.y = plat_hits[0].rect.top
-            self.player.vel.y = 0
+        if self.player.vel.y > 0:
+            plat_hits = pg.sprite.spritecollide(self.player, self.platforms, False)
+            if plat_hits:
+                self.player.pos.y = plat_hits[0].rect.top 
+                self.player.vel.y = 0
             
         coin_hits = pg.sprite.spritecollide(self.player, self.coins, False)
         if coin_hits:
             self.coin_count += 1
             self.score += 1
             coin_hits[0].kill()
+
+        bullet_hits = pg.sprite.groupcollide(self.enemies, self.bullets, False, False)
+        if bullet_hits:
+            for hit in bullet_hits:
+                hit.kill()
+                self.score += 5
+                
+        enemy_hits = pg.sprite.spritecollide(self.player, self.enemies, False)
+        if enemy_hits:
+            self.running = False
+            self.playing = False
             
         if self.player.rect.top <= 200: 
             self.player.pos.y += max(abs(self.player.vel.y), 2)
@@ -61,18 +75,27 @@ class Game():
                 coin.rect.top += max(abs(self.player.vel.y), 2)
                 if coin.rect.y >= 500:
                     coin.kill()
+            for enemy in self.enemies:
+                enemy.rect.top += max(abs(self.player.vel.y), 2)
+                if enemy.rect.y >= 500:
+                    enemy.kill()
 
-        if len(self.platforms) <= 5:
+        if len(self.platforms) < 5:
             p = Surface(random.randint(0, WIDTH), random.randint(-90, 0), random.randint(100, 200), 20, GREEN_SHEEN)
             self.platforms.add(p)
             self.all_sprites.add(p)
             
-        if len(self.coins) <= 2:
+        if len(self.coins) < 3:
             c = Surface(random.randint(0, WIDTH), random.randint(-90, 0), 20, 20, GOLD)
             self.coins.add(c)
             self.all_sprites.add(c)
             
-        if self.player.pos.y > 550:
+        if len(self.enemies) < 1:
+            e = Enemies(random.randint(-90, 0), random.randint(0, 1))
+            self.enemies.add(e)
+            self.all_sprites.add(e)
+            
+        if self.player.pos.y > 1000:
             self.playing = False
             self.running = False
             
@@ -86,7 +109,9 @@ class Game():
                     self.running = False
                     self.playing = False
                 if event.key == pg.K_SPACE:
-                    self.player.jump()                
+                    self.player.jump()   
+                if event.key == pg.K_LEFT and event.key == K_z:
+                    self.player.jump()             
         
     def draw(self):
         self.screen.fill(ASH_GRAY)
