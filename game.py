@@ -14,6 +14,7 @@ class Game():
         self.clock = pg.time.Clock()
         self.score = 0
         self.coin_count = 0
+        self.enemy_limit = 0
     
     def new(self):
         self.all_sprites = pg.sprite.Group()
@@ -81,7 +82,7 @@ class Game():
                     enemy.kill()
 
         if len(self.platforms) < 5:
-            p = Surface(random.randint(0, WIDTH), random.randint(-90, 0), random.randint(100, 200), 20, GREEN_SHEEN)
+            p = Surface(random.randint(30, WIDTH - 30), random.randint(-120, 0), random.randint(100, 200), 20, GREEN_SHEEN)
             self.platforms.add(p)
             self.all_sprites.add(p)
             
@@ -90,10 +91,12 @@ class Game():
             self.coins.add(c)
             self.all_sprites.add(c)
             
-        if len(self.enemies) < 1:
-            e = Enemies(random.randint(-90, 0), random.randint(0, 1))
+        if len(self.enemies) < self.enemy_limit:
+            e = Enemies(random.randint(-500, 0), random.randint(0, 1))
             self.enemies.add(e)
             self.all_sprites.add(e)
+            
+        self.change_difficulty()
             
         if self.player.pos.y > 1000:
             self.playing = False
@@ -118,6 +121,28 @@ class Game():
         self.all_sprites.draw(self.screen)
         self.draw_text("Score: " + str(self.score), 64, CHARLESTON_GREEN, WIDTH / 2, 20)
         pg.display.flip()
+        
+    def change_difficulty(self):
+        if self.score > 2250:
+            self.enemy_limit = 10
+        elif self.score > 2000:
+            self.enemy_limit = 9
+        elif self.score > 1750:
+            self.enemy_limit = 8
+        elif self.score > 1500:
+            self.enemy_limit = 7
+        elif self.score > 1250:
+            self.enemy_limit = 6
+        elif self.score > 1000:
+            self.enemy_limit = 5
+        elif self.score > 750:
+            self.enemy_limit = 4
+        elif self.score > 500:
+            self.enemy_limit = 3
+        elif self.score > 250:
+            self.enemy_limit = 2
+        elif self.score > 100:
+            self.enemy_limit = 1
     
     def draw_text(self, text, size, color, x, y):
         

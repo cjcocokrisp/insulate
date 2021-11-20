@@ -50,8 +50,8 @@ class Player(pg.sprite.Sprite):
             self.vel.y = -20
     
     def shoot(self, direction):
-        if len(self.game.bullets) < 3:
-            b = Bullet(self.rect.x, self.rect. y, direction)
+        if len(self.game.bullets) < 5:
+            b = Bullet(self.rect.x + 15, self.rect.y + 15, direction)
             self.game.bullets.add(b)
             self.game.all_sprites.add(b)
         
@@ -101,12 +101,13 @@ class Enemies(pg.sprite.Sprite):
         self.rect.x = 0
         self.rect.y = y
         self.direction = direction # 0 - left, 1 - right
+        self.speed = 5
         
     def update(self):
         if self.direction == 0:
-            self.rect.x -= 5
+            self.rect.x -= self.speed
         else:
-            self.rect.x += 5
+            self.rect.x += self.speed
             
         if self.rect.x > WIDTH:
             self.rect.x = 0
@@ -136,13 +137,13 @@ class Bullet(pg.sprite.Sprite):
     def update(self):
         
         if self.direction == 0:
-            self.rect.x -= 10
+            self.rect.x -= BULLET_SPEED
         elif self.direction == 1:
-            self.rect.x += 10
+            self.rect.x += BULLET_SPEED
         elif self.direction == 2:
-            self.rect.y -= 10
+            self.rect.y -= BULLET_SPEED
         elif self.direction == 3:
-            self.rect.y += 10
+            self.rect.y += BULLET_SPEED
         
         if self.rect.x > WIDTH:
             self.kill()
