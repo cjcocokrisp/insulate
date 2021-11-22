@@ -3,6 +3,8 @@ from pygame.constants import KEYDOWN, K_z
 from settings import *
 from sprites import *
 import random
+from time import sleep
+import json
 
 class Game():
     
@@ -14,7 +16,10 @@ class Game():
         self.clock = pg.time.Clock()
         self.score = 0
         self.coin_count = 0
+        self.enemies_defeated = 0
         self.enemy_limit = 0
+        self.stats = self.load_stats()
+        self.new_high_score = False
     
     def new(self):
         self.all_sprites = pg.sprite.Group()
@@ -58,13 +63,13 @@ class Game():
         if bullet_hits:
             for hit in bullet_hits:
                 hit.kill()
+                self.enemies_defeated += 1
                 self.score += 5
                 
         enemy_hits = pg.sprite.spritecollide(self.player, self.enemies, False)
         if enemy_hits:
-            self.running = False
-            self.playing = False
-            
+            self.game_over()
+                        
         if self.player.rect.top <= 200: 
             self.player.pos.y += max(abs(self.player.vel.y), 2)
             for plat in self.platforms:
@@ -82,7 +87,7 @@ class Game():
                     enemy.kill()
 
         if len(self.platforms) < 5:
-            p = Surface(random.randint(30, WIDTH - 30), random.randint(-120, 0), random.randint(100, 200), 20, GREEN_SHEEN)
+            p = Surface(random.randint(30, WIDTH - 30), random.randint(-30, 0), random.randint(100, 200), 20, GREEN_SHEEN)
             self.platforms.add(p)
             self.all_sprites.add(p)
             
@@ -99,8 +104,7 @@ class Game():
         self.change_difficulty()
             
         if self.player.pos.y > 1000:
-            self.playing = False
-            self.running = False
+            self.game_over()
             
     def events(self):
         for event in pg.event.get():
@@ -143,6 +147,29 @@ class Game():
             self.enemy_limit = 2
         elif self.score > 100:
             self.enemy_limit = 1
+            
+    def game_over(self):
+        self.playing = False
+        self.draw_text('GAME OVER', 64, RED, WIDTH / 2, HEIGHT / 2)
+        pg.display.flip()
+        sleep(2)
+        self.results_screen()
+        self.running = False
+        
+    def results_screen(self):
+        self.update_stats()
+        self.screen.fill(ASH_GRAY)
+        self.draw_text('Results:', 64, CHARLESTON_GREEN, WIDTH / 2, 20)
+        self.draw_text('Score: ' + str(self.score), 64, CHARLESTON_GREEN, WIDTH / 2, 100)
+        self.draw_text('Coins Collected: ' + str(self.coin_count), 55, CHARLESTON_GREEN, WIDTH / 2, 180)
+        self.draw_text('Enemies Defeated: ' + str(self.enemies_defeated), 58, CHARLESTON_GREEN, WIDTH / 2, 260)
+        if self.new_high_score:
+            self.draw_text('NEW HIGH SCORE!!!', 64, TEAL_BLUE, WIDTH / 2, 340)
+        self.draw_text('-Press any key to continue-', 40, CHARLESTON_GREEN, WIDTH / 2, 420)
+        pg.display.flip()
+        self.wait_for_input()
+        self.save_stats()
+        
     
     def draw_text(self, text, size, color, x, y):
         
@@ -153,3 +180,47 @@ class Game():
         text_rect = text_surface.get_rect()
         text_rect.midtop = (x, y)
         self.screen.blit(text_surface, text_rect)
+    
+    def update_stats(self):
+        
+        "Updates the user stats after a game."
+        
+        if self.score > self.stats['high_score']:
+            self.stats['high_score'] = self.score
+            self.new_high_score = True
+        
+        self.stats['total_score'] += self.score
+        self.stats['total_coins_collected'] += self.coin_count
+        self.stats['total_enemies_defeated'] += self.enemies_defeated
+        self.stats['games_played'] += 1
+    
+    def load_stats(self):
+        
+        "Loads the games statistics from data/game_stats.json."
+        
+        with open('data/game_stats.json', 'r') as f:
+            stats = json.load(f)
+        
+        f.close()
+        return stats
+    
+    def save_stats(self):
+        
+        "Saves the game statstics to data/game_stats.json."
+        
+        with open('data/game_stats.json', 'w') as f:
+            json.dump(self.stats, f)
+            
+        f.close()
+        
+    def wait_for_input(self):
+        waiting = True
+        while waiting:
+            self.clock.tick(60)
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    waiting = False
+                    self.running = False
+                if event.type == pg.KEYUP:
+                        waiting = False
+
