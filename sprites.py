@@ -145,14 +145,14 @@ class Bullet(pg.sprite.Sprite):
         elif self.direction == 3:
             self.rect.y += BULLET_SPEED
         
-        if self.rect.x > WIDTH:
+        if self.rect.x > WIDTH + 100:
             self.kill()
-        elif self.rect.x < 0:
+        elif self.rect.x < -100:
             self.kill()
             
-        if self.rect.y < 0:
+        if self.rect.y < -100:
             self.kill()
-        elif self.rect.y > HEIGHT:
+        elif self.rect.y > HEIGHT + 100:
             self.kill()
                 
             

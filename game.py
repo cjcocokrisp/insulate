@@ -165,7 +165,7 @@ class Game():
         self.draw_text('Enemies Defeated: ' + str(self.enemies_defeated), 58, CHARLESTON_GREEN, WIDTH / 2, 260)
         if self.new_high_score:
             self.draw_text('NEW HIGH SCORE!!!', 64, TEAL_BLUE, WIDTH / 2, 340)
-        self.draw_text('-Press any key to continue-', 40, CHARLESTON_GREEN, WIDTH / 2, 420)
+        self.draw_text('-Press space to continue-', 40, CHARLESTON_GREEN, WIDTH / 2, 420)
         pg.display.flip()
         self.wait_for_input()
         self.save_stats()
@@ -221,6 +221,6 @@ class Game():
                 if event.type == pg.QUIT:
                     waiting = False
                     self.running = False
-                if event.type == pg.KEYUP:
+                if event.type == pg.KEYUP and event.key == pg.K_SPACE:
                         waiting = False
 

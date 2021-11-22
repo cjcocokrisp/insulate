@@ -29,6 +29,8 @@ class App():
         self.current_date = self.get_date_time()
         self.average = 0
         self.plays_remaining = 0
+        game = Game()
+        self.game_stats = game.load_stats()
         
     def run(self):
         self.events()
@@ -79,6 +81,9 @@ class App():
             self.advice = Image('./assets/img/check/advice.png', WIDTH / 2 - 77.5, 290)
             self.remaining = Image('./assets/img/check/remaining.png', WIDTH - 304, HEIGHT - 35)
             self.all_sprites.add(self.header, self.play, self.advice, self.remaining)
+        if self.state == 'stats':
+            self.header = Image('./assets/img/stats/header.png', 0, 0)
+            self.all_sprites.add(self.header)
         if self.state == 'settings':
             self.header = Image('./assets/img/settings/header.png', 0, 50)
             self.high = Image('./assets/img/settings/high.png', 45, 150)
@@ -121,6 +126,7 @@ class App():
                     game = Game()
                     while game.running:
                         game.new()
+                    self.game_stats = game.load_stats()
             if event.type == pg.MOUSEBUTTONUP and self.state == 'settings': 
                 mouse_pos = pg.mouse.get_pos()
                 if self.left_arrow_h.rect.collidepoint(mouse_pos[0], mouse_pos[1]) and self.app_settings['high_setting'] > 120:
@@ -226,16 +232,18 @@ class App():
                         else: 
                             self.plays_remaining = 3
                 # WHEN DONE WITH APP TRY TO GET ERROR MESSAGE WORKING
+            if pg.mouse.get_pressed()[0] and self.stats.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                self.state_change('stats')
                 
         if self.state == 'check':
             
             if pg.mouse.get_pressed()[0] and self.back.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
                 self.state_change('menu-check')
                 
-            #if pg.MOUSEBUTTONDOWN and self.play.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
-                #game = Game()
-                #while game.running:
-                    #game.new()
+        if self.state == 'stats':
+            
+            if pg.mouse.get_pressed()[0] and self.back.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                self.state_change('menu-check')
                                                           
         if self.state == 'settings':
 
@@ -258,6 +266,12 @@ class App():
             self.draw_text(self.manual_bs_input, 110, BEIGE, WIDTH / 2, HEIGHT / 2 - 45)
         if self.state == 'track-dexcom':
             self.draw_text(self.auth_code, 32, BEIGE, WIDTH / 2, 272)
+        if self.state == 'stats':
+            self.draw_text("High Score: " + str(self.game_stats['high_score']), 55, CHARLESTON_GREEN, WIDTH / 2, 120)
+            self.draw_text("Total Score: " + str(self.game_stats['total_score']), 55, CHARLESTON_GREEN, WIDTH / 2, 170)
+            self.draw_text("Coins Collected: " + str(self.game_stats['total_coins_collected']), 50, CHARLESTON_GREEN, WIDTH / 2, 220)
+            self.draw_text("Enemies Defeated: " + str(self.game_stats['total_enemies_defeated']), 50, CHARLESTON_GREEN, WIDTH / 2, 270)
+            self.draw_text("Games Played: " + str(self.game_stats['games_played']), 55, CHARLESTON_GREEN, WIDTH / 2, 320)
         if self.state == 'settings':
             self.draw_text(str(self.app_settings['high_setting']), 32, ASH_GRAY, 387, 152)
             self.draw_text(str(self.app_settings['low_setting']), 32, ASH_GRAY, 387, 202)
