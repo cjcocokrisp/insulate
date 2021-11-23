@@ -11,6 +11,8 @@ import dexcom_integration as dex_int
 import clipboard
 from datetime import datetime
 from time import sleep
+from advice import *
+import random
 
 class App():
 
@@ -31,6 +33,7 @@ class App():
         self.plays_remaining = 0
         game = Game()
         self.game_stats = game.load_stats()
+        self.todays_advice = []
         
     def run(self):
         self.events()
@@ -83,10 +86,17 @@ class App():
             self.all_sprites.add(self.header, self.play, self.advice, self.remaining)
         if self.state == 'stats':
             self.header = Image('./assets/img/stats/header.png', 0, 0)
-            self.all_sprites.add(self.header)
+            self.back = Image('./assets/img/back.png', WIDTH / 2 - 28, HEIGHT - 56)
+            self.all_sprites.add(self.header, self.back)
         if self.state == 'how_to_play':
             self.image = Image('./assets/img/how_to_play.png', 0, 0)
-            self.all_sprites.add(self.image)
+            self.back = Image('./assets/img/back.png', WIDTH / 2 - 28, HEIGHT - 56)
+            self.all_sprites.add(self.image, self.back)
+        if self.state == 'advice':
+            self.header = Image('./assets/img/advice/header.png', 0, 0)
+            self.text_box = Surface(20, 100, WIDTH - 40, 330, CHARLESTON_GREEN)
+            self.back = Image('./assets/img/back.png', WIDTH / 2 - 28, HEIGHT - 56)
+            self.all_sprites.add(self.header, self.text_box, self.back)
         if self.state == 'settings':
             self.header = Image('./assets/img/settings/header.png', 0, 50)
             self.high = Image('./assets/img/settings/high.png', 45, 150)
@@ -103,7 +113,7 @@ class App():
             self.right_arrow_c = Image('./assets/img/settings/right-arrow.png', 430, 250)
             self.save = Image('./assets/img/settings/save.png', WIDTH / 2 - 93.5, 350)
             self.all_sprites.add(self.header, self.high, self.low, self.collect, self.left_arrow_h, self.option_box_h, self.right_arrow_h, self.left_arrow_l, self.option_box_l, self.right_arrow_l, self.left_arrow_c, self.option_box_c, self.right_arrow_c, self.save)
-        if self.state != 'menu-main':
+        if self.state != 'menu-main' and self.state != 'advice' and self.state != 'how_to_play' and self.state != 'stats':
             self.back = Image('./assets/img/back.png', 0, HEIGHT - 56)
             self.all_sprites.add(self.back)
         self.run()
@@ -229,12 +239,16 @@ class App():
                     data = self.load_bs_data()
                     if not data:
                         self.average = "NONE"
+                        self.no_data = True
                     else:
                         self.average = self.average_data(data)
                         if self.average >= self.app_settings['high_setting'] or self.average <= self.app_settings['low_setting']:
                             self.plays_remaining = 1
                         else: 
                             self.plays_remaining = 3
+                        self.get_advice()
+                        self.no_data = False
+                            
                 # WHEN DONE WITH APP TRY TO GET ERROR MESSAGE WORKING
             if pg.mouse.get_pressed()[0] and self.stats.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
                 self.state_change('stats')
@@ -246,8 +260,12 @@ class App():
             
             if pg.mouse.get_pressed()[0] and self.back.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
                 self.state_change('menu-check')
-                self.app_settings['last_check'] = self.current_date[0:10]
-                self.save_settings()
+                if not self.no_data:
+                    self.app_settings['last_check'] = self.current_date[0:10]
+                    self.save_settings()
+                
+            if pg.mouse.get_pressed()[0] and self.advice.rect.collidepoint(mouse_pos[0], mouse_pos[1]) and self.no_data == False:
+                self.state_change('advice')
                 
         if self.state == 'stats':
             
@@ -258,7 +276,10 @@ class App():
             
             if pg.mouse.get_pressed()[0] and self.back.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
                 self.state_change('menu-check')
-    
+
+        if self.state == 'advice':
+            if pg.mouse.get_pressed()[0] and self.back.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                self.state_change('check')
                                                           
         if self.state == 'settings':
 
@@ -272,13 +293,13 @@ class App():
         self.screen.fill(ASH_GRAY)
         self.all_sprites.draw(self.screen)
         if self.state == 'check' and self.average != 'NONE':
-            self.draw_text(str(round(self.average, 2)), 64, CHARLESTON_GREEN, 370, 68)
-            self.draw_text(str(self.plays_remaining), 39, CHARLESTON_GREEN, WIDTH - 28, HEIGHT - 36)
+            self.draw_text(str(round(self.average, 2)), 64, CHARLESTON_GREEN, 370, 80)
+            self.draw_text(str(self.plays_remaining), 39, CHARLESTON_GREEN, WIDTH - 28, HEIGHT - 32)
         elif self.state == 'check':
             self.draw_text("NONE", 64, CHARLESTON_GREEN, 370, 68)
             self.draw_text('0', 39, CHARLESTON_GREEN, WIDTH - 28, HEIGHT - 36)
         if self.state == 'track-manual':
-            self.draw_text(self.manual_bs_input, 110, BEIGE, WIDTH / 2, HEIGHT / 2 - 45)
+            self.draw_text(self.manual_bs_input, 110, BEIGE, WIDTH / 2, HEIGHT / 2 - 25)
         if self.state == 'track-dexcom':
             self.draw_text(self.auth_code, 32, BEIGE, WIDTH / 2, 272)
         if self.state == 'stats':
@@ -291,6 +312,17 @@ class App():
             self.draw_text(str(self.app_settings['high_setting']), 32, ASH_GRAY, 387, 152)
             self.draw_text(str(self.app_settings['low_setting']), 32, ASH_GRAY, 387, 202)
             self.draw_text(str(self.app_settings['collection_range']), 32, ASH_GRAY, 387, 252)
+        if self.state == 'advice':
+            self.draw_text(self.todays_advice[0], 32, BEIGE, WIDTH / 2, 110)
+            self.draw_text(self.todays_advice[1], 32, BEIGE, WIDTH / 2, 140)
+            self.draw_text(self.todays_advice[2], 32, BEIGE, WIDTH / 2, 170)
+            self.draw_text(self.todays_advice[3], 32, BEIGE, WIDTH / 2, 200)
+            self.draw_text(self.todays_advice[4], 32, BEIGE, WIDTH / 2, 230)
+            self.draw_text(self.todays_advice[5], 32, BEIGE, WIDTH / 2, 260)
+            self.draw_text(self.todays_advice[6], 32, BEIGE, WIDTH / 2, 290)
+            self.draw_text(self.todays_advice[7], 32, BEIGE, WIDTH / 2, 320)
+            self.draw_text(self.todays_advice[8], 32, BEIGE, WIDTH / 2, 350)
+            self.draw_text(self.todays_advice[9], 32, BEIGE, WIDTH / 2, 380)
         pg.display.flip()
 
     def draw_text(self, text, size, color, x, y):
@@ -437,4 +469,24 @@ class App():
         with open('./data/settings.json', 'w') as f:
             json.dump(self.app_settings, f, indent=4)
             f.close()
+            
+    def get_advice(self):
+        
+        "Gets random advice depending on blood sugars average."
+        
+        option = random.randint(0, 2)
+        if self.average >= self.app_settings['high_setting']:
+            result = HIGH
+        elif self.average <= self.app_settings['low_setting']:
+            result = LOW
+        else:
+            result = IN_RANGE
+        
+        for x in result[random.randint(0, len(result) - 1)]:
+            self.todays_advice.append(x)
+            
+        
+        
+        
+        
 
