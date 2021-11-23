@@ -84,6 +84,9 @@ class App():
         if self.state == 'stats':
             self.header = Image('./assets/img/stats/header.png', 0, 0)
             self.all_sprites.add(self.header)
+        if self.state == 'how_to_play':
+            self.image = Image('./assets/img/how_to_play.png', 0, 0)
+            self.all_sprites.add(self.image)
         if self.state == 'settings':
             self.header = Image('./assets/img/settings/header.png', 0, 50)
             self.high = Image('./assets/img/settings/high.png', 45, 150)
@@ -122,11 +125,12 @@ class App():
                 self.manual_bs_input = ''
             if self.state == 'check':
                 mouse_pos = pg.mouse.get_pos()
-                if event.type == pg.MOUSEBUTTONUP and self.play.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                if event.type == pg.MOUSEBUTTONUP and self.play.rect.collidepoint(mouse_pos[0], mouse_pos[1]) and self.plays_remaining > 0:
                     game = Game()
                     while game.running:
                         game.new()
                     self.game_stats = game.load_stats()
+                    self.plays_remaining -= 1
             if event.type == pg.MOUSEBUTTONUP and self.state == 'settings': 
                 mouse_pos = pg.mouse.get_pos()
                 if self.left_arrow_h.rect.collidepoint(mouse_pos[0], mouse_pos[1]) and self.app_settings['high_setting'] > 120:
@@ -174,7 +178,7 @@ class App():
         
         if self.state == 'track-dexcom':
             if pg.mouse.get_pressed()[0] and self.back.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
-                self.state_change('menu-main')
+                self.state_change('menu-track')
 
             if pg.mouse.get_pressed()[0] and self.sign_in.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
                 dex_int.prompt_login()
@@ -235,15 +239,26 @@ class App():
             if pg.mouse.get_pressed()[0] and self.stats.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
                 self.state_change('stats')
                 
+            if pg.mouse.get_pressed()[0] and self.how_to.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                self.state_change('how_to_play')
+                
         if self.state == 'check':
             
             if pg.mouse.get_pressed()[0] and self.back.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
                 self.state_change('menu-check')
+                self.app_settings['last_check'] = self.current_date[0:10]
+                self.save_settings()
                 
         if self.state == 'stats':
             
             if pg.mouse.get_pressed()[0] and self.back.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
                 self.state_change('menu-check')
+                
+        if self.state == 'how_to_play':
+            
+            if pg.mouse.get_pressed()[0] and self.back.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                self.state_change('menu-check')
+    
                                                           
         if self.state == 'settings':
 
