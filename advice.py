@@ -1,4 +1,7 @@
 # This file contains the format for the advice text on the advice screen.
+# Each value in the lists with strings reprents a line of the advice screen. 
+# There are 10 lines total.
+# The values are used as the text value for each line. 
 
 IN_RANGE = [
     ["", "", "", "", "Your average is in range!", "Keep up the good work!", "", "", "", ""],
