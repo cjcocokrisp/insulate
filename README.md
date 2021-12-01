@@ -89,6 +89,8 @@ If you get an error:
 
 - Dexcom for being an awesome company and having a free to use API. 
 
+- Saint Mary's High School and all the staff that made this class possible, without it I would not have been able to have this amazing learning experience. 
+
 
 
 
