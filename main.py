@@ -323,10 +323,10 @@ class App():
         self.screen.fill(ASH_GRAY) # Background color throughout the app. 
         self.all_sprites.draw(self.screen) # Draws every sprite to the screen.
         if self.state == 'check' and self.average != 'NONE': # Draws the text for the blood sugar average and plays remaining on the check and play screne.
-            self.draw_text(str(round(self.average, 2)), 64, CHARLESTON_GREEN, 370, 80) # Rounds the average to two decimal places.
+            self.draw_text(str(round(self.average, 2)), 64, CHARLESTON_GREEN, 370, HEIGHT - 420) # Rounds the average to two decimal places.
             self.draw_text(str(self.plays_remaining), 39, CHARLESTON_GREEN, WIDTH - 28, HEIGHT - 32)
         elif self.state == 'check': # Displays none instead of an average if no data is displayed. 
-            self.draw_text("NONE", 64, CHARLESTON_GREEN, 370, 68)
+            self.draw_text("NONE", 64, CHARLESTON_GREEN, 370, HEIGHT - 420)
             self.draw_text('0', 39, CHARLESTON_GREEN, WIDTH - 28, HEIGHT - 36)
         if self.state == 'track-manual': # Displays keyboard inputs on the manual screen.
             self.draw_text(self.manual_bs_input, 110, BEIGE, WIDTH / 2, HEIGHT / 2 - 25)
