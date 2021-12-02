@@ -122,9 +122,9 @@ class Enemies(pg.sprite.Sprite):
         else:
             self.rect.x += self.speed
             
-        if self.rect.x > WIDTH: # If the enemy goes all the way to the left or right moves them to the other side.
+        if self.rect.x > WIDTH + 100: # If the enemy goes all the way to the left or right moves them to the other side.
             self.rect.x = 0
-        elif self.rect.x < 0:
+        elif self.rect.x < -100:
             self.rect.x = WIDTH
             
 class Bullet(pg.sprite.Sprite):
@@ -138,6 +138,8 @@ class Bullet(pg.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
         self.direction = direction # 0 - left, 1 - right, 2 - up, 3 - down.
+        self.start_x = x
+        self.start_y = y
     
     def size_choice(self, direction):
         
@@ -162,14 +164,14 @@ class Bullet(pg.sprite.Sprite):
             self.rect.y += BULLET_SPEED
         
         # The rest deals with the despawning the bullet once it goes off screen.
-        if self.rect.x > WIDTH + 100: 
+        if self.rect.x > self.start_x + 500 and self.direction == 1: 
             self.kill()
-        elif self.rect.x < -100:
+        elif self.rect.x < self.start_x - 500 and self.direction == 0:
             self.kill()
             
-        if self.rect.y < -100:
+        if self.rect.y < self.start_y - 500 and self.direction == 2:
             self.kill()
-        elif self.rect.y > HEIGHT + 100:
+        elif self.rect.y > self.start_y + 500 and self.direction == 3:
             self.kill()
                 
             
