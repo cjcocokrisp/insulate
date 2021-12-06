@@ -1,4 +1,5 @@
 from types import DynamicClassAttribute
+import webbrowser
 import pygame as pg
 import pygame as pg
 from pygame import mouse
@@ -146,6 +147,10 @@ class App():
                 self.auth_code = ''
             if self.state == 'track-manual' and event.type == pg.KEYDOWN and event.key == K_BACKSPACE: # Resets the input.
                 self.manual_bs_input = ''
+            if self.state == 'menu-main':
+                mouse_pos = pg.mouse.get_pos()
+                if event.type == pg.MOUSEBUTTONUP and self.help.rect.collidepoint(mouse_pos[0], mouse_pos[1]):
+                    webbrowser.open('https://github.com/cjcocokrisps/Insulate/blob/main/README.md') # Brings you to the README.md on Github.
             # The code below deals with the user pressing the play button on the check screen.
             # It is here instead of update because update is for things that don't linger in one spot. 
             # If this was in update it would press the button multiple times and play right after you lost if plays remain. 
