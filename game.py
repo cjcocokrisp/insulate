@@ -15,7 +15,7 @@ class Game():
         pg.init()
         self.running = True
         self.screen = pg.display.set_mode((WIDTH, HEIGHT)) # See settings.py for the WIDTH and HEIGHT values.
-        pg.display.set_caption("Insulate Development Build")
+        pg.display.set_caption("Insulate")
         self.clock = pg.time.Clock()
         self.score = 0
         self.coin_count = 0
