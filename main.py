@@ -25,6 +25,8 @@ class App():
         self.running = True
         self.screen = pg.display.set_mode((WIDTH, HEIGHT)) # WIDTH and HEIGHT are used in various places of the program see settings.py for the value.
         pg.display.set_caption('Insulate')
+        icon = pg.image.load('./assets/img/icon.png')
+        pg.display.set_icon(icon)
         self.clock = pg.time.Clock()
         self.state = 'menu-main' # Changes the behavior of appliction based on the value. 
         self.manual_bs_input = ''
