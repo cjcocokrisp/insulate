@@ -18,6 +18,8 @@ Insulate is a Diabetes application targeted to motivate and help children consis
 4. Run the following commands to install the required packages for the application to run `pip install pygame`, `pip install clipboard`, and `pip install requests`.
 5. Next run the command `python run.py` or `python3 run.py`. If everything went correctly then the app should now be on your screen.
 
+*If you are using any Linux distro you can also install a release of Insulate and use Wine to run the exe file. However, there may be some bugs when doing this.*
+
 **IMPORTANT NOTES FOR USING THE APPLICATION ON LINUX/MAC:**
 
 The Dexcom functionality will not work on properly because the `api_credentials.py` file does not have valid api credentials in it. The reasoning for this is for security reasons. If you would like to use the Dexcom functionality make an account at [the Dexcom apis website](https://developer.dexcom.com/) and then go to my apps and create a new app. Once you do that set a redirect uri and copy your client secret and client id, edit the Python file and put all of those values into their specific values. 
