@@ -459,7 +459,7 @@ class App():
             if day < 10:
                 day = '0' + str(day)
             
-        if self.app_settings['collection_range'] == 48: # Adds a 0 in front of the hour if the collection range is 48. 
+        if self.app_settings['collection_range'] == 48 and day < 10: # Adds a 0 in front of the day if the collection range is 48 and the day is less than 10. 
             day = '0' + str(day)
 
         start_date = "{}-{}-{}T{}:{}:{}".format(year, month, day, hours, minutes, seconds) # Formats the new date. 
